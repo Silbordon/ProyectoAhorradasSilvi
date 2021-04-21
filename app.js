@@ -140,14 +140,14 @@ btnAddOperation.addEventListener('click', () => {
 // chequea el array operations
 const checkOperations = (arrOperaciones) => {
     if (arrOperaciones.length === 0) {
-      operationList.classList.add("is-hidden");
-      withoutOperations.classList.remove("is-hidden");
+        operationList.classList.add("is-hidden");
+        withoutOperations.classList.remove("is-hidden");
     } else {
-      withoutOperations.classList.add("is-hidden");
-      operationList.classList.remove("is-hidden");
+        withoutOperations.classList.add("is-hidden");
+        operationList.classList.remove("is-hidden");
     }
-  };
-  
+};
+
 
 
 //para pintar en html
@@ -216,12 +216,12 @@ const btnCancelEditCategory = document.getElementById('btn-cancel-edit-category'
 
 //Array DEL OBJETO CATEGORIAS
 let categories = [
-    {id: 0, nombre: "Comida"},
-    {id: 1, nombre: "Educacion"},
-    {id: 2, nombre: "Salidas"},
-    {id: 3, nombre: "Servicios"},
-    {id: 4, nombre: "Trabajo"},
-    {id: 5, nombre: "Transporte"}
+    { id: 0, nombre: "Comida" },
+    { id: 1, nombre: "Educacion" },
+    { id: 2, nombre: "Salidas" },
+    { id: 3, nombre: "Servicios" },
+    { id: 4, nombre: "Trabajo" },
+    { id: 5, nombre: "Transporte" }
 ];
 
 
@@ -266,13 +266,13 @@ categoriesSelect(categories);
 //Funcion al boton AGREGAR EN LA SECCION CATEGORIAS
 btnAddCategories.addEventListener('click', () => {
     const newCategory = inputCategories.value;
-    categories.push({id:categories.length, nombre: newCategory});
+    categories.push({ id: categories.length, nombre: newCategory });
 
     localStorage.setItem('categoriasStorage', JSON.stringify(categories))
     const getCategoriesStorage = JSON.parse(localStorage.getItem('categoriasStorage'))
     categoriesHTML(getCategoriesStorage);
     categoriesSelect(getCategoriesStorage);
-  
+
     inputCategories.value = '';
 });
 
@@ -321,20 +321,54 @@ btnEditCategory.addEventListener("click", () => {
 //eliminar categoria
 const deleteCategory = (category) => {
     const categoryName = categories.find((elem) => elem.id == category);
-  
+
     const value = categories.findIndex((elem) => elem.id == category);
     if (value >= 0) {
-      categories.splice(value, 1);
-      categoriesHTML();
-      categoriesSelect();
+        categories.splice(value, 1);
+        localStorage.setItem('categoriasStorage', JSON.stringify(categories))
+        categoriesHTML(categories);
+        categoriesSelect(categories);
     }
-    operations.forEach(() =>{
-        const index = operations.findIndex(operation => operation.categoria === categoryName.nombre)
-        if (index >= 0){
-          operations.splice(index, 1)
-        }
-        operationsHtml(operations);
-      })
-    };
-  
+
+};
+
+
+
+
+// FILTROS
+const filtersType = document.getElementById("filters-type");
+const filtersOrder = document.getElementById("filters-order");
+
+
+const filtrar = (e) => {
+    let atr = "";
+    if (e.target.id === "filters-type") {
+        atr = "tipo";
+    }
+    if (e.target.id === "filters-categories") {
+        atr = "categoria";
+    }
+    let resultado = [];
+    if (resultado.length > 0) {
+        resultado = resultado.filter(
+            (operation) => operation[atr] === e.target.value
+        );
+    } else {
+        resultado = operations.filter(
+            (operation) => operation[atr] === e.target.value
+        );
+    }
+
+    e.target.value === "Todas"
+        ? operationsHtml(operations)
+        : operationsHtml(resultado);
+};
+
+
+filtersType.addEventListener("change", (e) => {
+    filtrar(e);
+});
+filtersCategories.addEventListener("change", (e) => {
+    filtrar(e);
+});
 
