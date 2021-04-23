@@ -170,8 +170,8 @@
                     <div class="control">
                         <div class="select is-fullwidth is-small">
                             <select id="operation-type">
-                                <option>Gasto</option>
-                                <option>Ganancia</option>
+                                <option value="Gasto">Gasto</option>
+                                <option value="Ganancia">Ganancia</option>
                             </select>
                         </div>
                     </div>
@@ -227,8 +227,8 @@
             <div class="control">
                 <div class="select is-fullwidth is-small">
                     <select id="operation-edit-type">
-                        <option>Gasto</option>
-                        <option>Ganancia</option>
+                        <option value="Gasto">Gasto</option>
+                        <option value="Ganancia">Ganancia</option>
                     </select>
                 </div>
             </div>
@@ -250,7 +250,7 @@
         </div>
         <div class="field is-grouped is-justify-content-flex-end	pt-5">
             <p class="control">
-                <button id="btn-cancel-edit-operation" class="button">
+                <button id="btn-cancel-edit-operation" class="button" onclick="showSectionOperation()">
                     Cancelar
                 </button>
             </p>

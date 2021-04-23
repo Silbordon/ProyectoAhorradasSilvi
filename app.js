@@ -36,10 +36,12 @@ btnNewOperation.addEventListener('click', () => {
     balanceSection.classList.add('is-hidden')
     sectionReports.classList.add('is-hidden')
     formOperation.classList.remove('is-hidden')
+    formEditOperation.classList.add('is-hidden')
 })
 
 btnCancelOperation.addEventListener('click', () => {
     formOperation.classList.add('is-hidden')
+    formEditOperation.classList.add('is-hidden')
     balanceSection.classList.remove('is-hidden')
 })
 
@@ -75,6 +77,8 @@ btnBalance.addEventListener('click', () => {
     sectionReports.classList.add('is-hidden')
     sectionCategories.classList.add('is-hidden')
     formOperation.classList.add('is-hidden')
+    formEditOperation.classList.add('is-hidden')
+
 });
 
 btnCategories.addEventListener('click', () => {
@@ -82,6 +86,8 @@ btnCategories.addEventListener('click', () => {
     sectionReports.classList.add('is-hidden')
     sectionCategories.classList.remove('is-hidden')
     formOperation.classList.add('is-hidden')
+    formEditOperation.classList.add('is-hidden')
+
 });
 
 
@@ -90,6 +96,8 @@ btnReports.addEventListener('click', () => {
     sectionReports.classList.remove('is-hidden')
     sectionCategories.classList.add('is-hidden')
     formOperation.classList.add('is-hidden')
+    formEditOperation.classList.add('is-hidden')
+
 });
 
 
@@ -164,8 +172,8 @@ const operationsHtml = (operations) => {
         <div class="column is-3 is-size-6">${operations[i].fecha}</div>
         <div class="column is-2 is-size-6 has-text-danger ">-${operations[i].monto}</div>
         <div class="column is-2 px-0">
-        <a class="is-size-7 mr-1">Editar</a>
-        <a class="is-size-7">Eliminar</a>
+        <a class="is-size-7 mr-1" onclick="editOperation('${operations[i].id}')">Editar</a>
+        <a class="is-size-7" onclick="deleteOperation('${operations[i].id}')">Eliminar</a>
         </div>
     </div>
         `
@@ -177,8 +185,8 @@ const operationsHtml = (operations) => {
          <div class="column is-3 is-size-6">${operations[i].fecha}</div>
          <div class="column is-2 is-size-6 has-text-success">+${operations[i].monto}</div>
          <div class="column is-2 px-0">
-         <a class="is-size-7 mr-1">Editar</a>
-         <a class="is-size-7">Eliminar</a>
+         <a class="is-size-7 mr-1" onclick="editOperation('${operations[i].id}')">Editar</a>
+         <a class="is-size-7" onclick="deleteOperation('${operations[i].id}')">Eliminar</a>
          </div>
      </div>
          `
@@ -194,11 +202,69 @@ operationsHtml(operations);
 
 //EDITAR NUEVA OPERACION
 const btnEditOperation = document.getElementById('btn-edit-operation');
+const formEditOperation = document.getElementById('form-edit-operation') //Section de editar nueva operacion
 const operationEditDescription = document.getElementById("operation-edit-description");
 const operationEditAmount = document.getElementById("operation-edit-amount");
 const operationEditType = document.getElementById("operation-edit-type");
 const operationEditCategories = document.getElementById("operation-edit-categories");
 const operationEditDate = document.getElementById('operation-edit-date');
+
+//esconder seccion de editar categoria
+const hideSectionsOperation = () => {
+    sectionCategories.classList.add("is-hidden");
+    sectionReports.classList.add("is-hidden");
+    formOperation.classList.add("is-hidden");
+    balanceSection.classList.add("is-hidden");
+    editCategorySection.classList.add("is-hidden");
+    formEditOperation.classList.remove("is-hidden");
+};
+
+const showSectionOperation = () => {
+    sectionCategories.classList.add("is-hidden");
+    sectionReports.classList.add("is-hidden");
+    formOperation.classList.add("is-hidden");
+    balanceSection.classList.remove("is-hidden");
+    editCategorySection.classList.add("is-hidden");
+    formEditOperation.classList.add("is-hidden");
+
+};
+
+//EDITAR operaciones
+let position; //Posicion en el arreglo de operacion a editar
+const editOperation = (operation) => {
+    hideSectionsOperation();
+    position = operations.findIndex((e) => e.id == operation);
+    operationEditDescription.value = operations[position].descripcion
+    operationEditAmount.value = operations[position].monto
+    operationEditType.value = operations[position].tipo
+    operationEditCategories.value = operations[position].categoria
+    operationEditDate.value = operations[position].fecha
+    return position;
+};
+
+btnEditOperation.addEventListener('click', () => {
+    operations[position].descripcion = operationEditDescription.value;
+    operations[position].monto = operationEditAmount.value;
+    operations[position].tipo = operationEditType.value;
+    operations[position].categoria = operationEditCategories.value;
+    operations[position].fecha = operationEditDate.value;
+    localStorage.setItem('operacionesStorage', JSON.stringify(operations));
+    operationsHtml(operations);
+    showSectionOperation();
+})
+
+
+
+//eliminar operaciones
+const deleteOperation = (operation) => {
+    const value = operations.findIndex((elem) => elem.id == operation);
+    if (value >= 0) {
+        operations.splice(value, 1);
+        localStorage.setItem('operacionesStorage', JSON.stringify(operations));
+        operationsHtml(operations);
+    }
+
+};
 
 
 
@@ -258,6 +324,7 @@ const categoriesSelect = (categories) => {
         `
         operationCategories.insertAdjacentHTML('beforeend', categoria);
         filtersCategories.insertAdjacentHTML('beforeend', categoria);
+        operationEditCategories.insertAdjacentHTML('beforeend', categoria);
     }
 }
 categoriesSelect(categories);
@@ -348,27 +415,50 @@ const filtrar = (e) => {
     if (e.target.id === "filters-categories") {
         atr = "categoria";
     }
-    let resultado = [];
-    if (resultado.length > 0) {
-        resultado = resultado.filter(
-            (operation) => operation[atr] === e.target.value
-        );
-    } else {
-        resultado = operations.filter(
-            (operation) => operation[atr] === e.target.value
-        );
-    }
 
-    e.target.value === "Todas"
-        ? operationsHtml(operations)
-        : operationsHtml(resultado);
+    const result = operations.filter(operation => operation[atr] === e.target.value)
+    e.target.value === "Todas" ? operationsHtml(operations) : operationsHtml(result);
 };
 
 
-filtersType.addEventListener("change", (e) => {
-    filtrar(e);
-});
-filtersCategories.addEventListener("change", (e) => {
-    filtrar(e);
-});
 
+const filtrarFechaMayorOIgual = (e) => {
+    const result = operations.filter(operation => operation.fecha >= e.target.value)
+    operationsHtml(result)
+};
+
+
+
+const ordenarMasMenosReciente = (operacion, orden) => {
+    let result
+    if (orden === 'ASC') {
+        result = [...operacion].sort((a, b) => a.fecha > b.fecha ? 1 : -1)
+    } else {
+        result = [...operacion].sort((a, b) => a.fecha < b.fecha ? 1 : -1)
+    }
+    operationsHtml(result)
+}
+
+const filtrarOperaciones = () => {
+    const orden = filtersOrder.value
+    let operaciones = operations;
+
+    switch (orden) {
+        case "Mas Reciente":
+            operaciones = ordenarMasMenosReciente(operations, "DESC")
+            break;
+        case "Menos Reciente":
+            operaciones = ordenarMasMenosReciente(operations, "ASC")
+
+        default:
+            break;
+    }
+}
+
+filtersType.addEventListener("change", (e) => { filtrar(e) });
+filtersCategories.addEventListener("change", (e) => { filtrar(e) });
+fechaFiltros.addEventListener('change' ,(e) => {filtrarFechaMayorOIgual(e)});
+filtersOrder.addEventListener('change', () =>{
+    filtrarOperaciones();
+    
+});
