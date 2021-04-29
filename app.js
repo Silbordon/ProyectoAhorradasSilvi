@@ -140,6 +140,8 @@ btnAddOperation.addEventListener('click', () => {
     localStorage.setItem('operacionesStorage', JSON.stringify(operations));
     const getOperacionesStorage = JSON.parse(localStorage.getItem('operacionesStorage'))
     operationsHtml(getOperacionesStorage);
+    balanceHTML(getOperacionesStorage);
+    filtrarOperaciones();
 
     resetFormOperation();
     formOperation.classList.add('is-hidden')
@@ -241,6 +243,11 @@ const editOperation = (operation) => {
     operationEditType.value = operations[position].tipo
     operationEditCategories.value = operations[position].categoria
     operationEditDate.value = operations[position].fecha
+
+    if ( operationEditType.value === 'Gasto') {
+        operationEditAmount.value = Number(operations[position].monto) * -1;
+    }
+
     return position;
 };
 
@@ -250,8 +257,15 @@ btnEditOperation.addEventListener('click', () => {
     operations[position].tipo = operationEditType.value;
     operations[position].categoria = operationEditCategories.value;
     operations[position].fecha = operationEditDate.value;
+
+    if (operations[position].tipo === 'Gasto') {
+        operations[position].monto = Number(operationEditAmount.value) * -1;
+    }
+
+
     localStorage.setItem('operacionesStorage', JSON.stringify(operations));
     operationsHtml(operations);
+    balanceHTML(operations);
     showSectionOperation();
 })
 
@@ -264,6 +278,7 @@ const deleteOperation = (operation) => {
         operations.splice(value, 1);
         localStorage.setItem('operacionesStorage', JSON.stringify(operations));
         operationsHtml(operations);
+        balanceHTML(operations);
     }
 
 };
@@ -286,12 +301,12 @@ const btnCancelEditCategory = document.getElementById('btn-cancel-edit-category'
 
 //Array DEL OBJETO CATEGORIAS
 let categories = [
-    { id: 0, nombre: "Comida" },
-    { id: 1, nombre: "Educacion" },
-    { id: 2, nombre: "Salidas" },
-    { id: 3, nombre: "Servicios" },
-    { id: 4, nombre: "Trabajo" },
-    { id: 5, nombre: "Transporte" }
+    { id: uuid.v4(), nombre: "Comida" },
+    { id: uuid.v4(), nombre: "Educacion" },
+    { id: uuid.v4(), nombre: "Salidas" },
+    { id: uuid.v4(), nombre: "Servicios" },
+    { id: uuid.v4(), nombre: "Trabajo" },
+    { id: uuid.v4(), nombre: "Transporte" }
 ];
 
 
@@ -335,7 +350,7 @@ categoriesSelect(categories);
 //Funcion al boton AGREGAR EN LA SECCION CATEGORIAS
 btnAddCategories.addEventListener('click', () => {
     const newCategory = inputCategories.value;
-    categories.push({ id: categories.length, nombre: newCategory });
+    categories.push({ id: uuid.v4(), nombre: newCategory });
 
     localStorage.setItem('categoriasStorage', JSON.stringify(categories))
     const getCategoriesStorage = JSON.parse(localStorage.getItem('categoriasStorage'))
@@ -366,39 +381,64 @@ const hideEditSection = () => {
 
 
 //editar categoria
-let index;
+let resultado;
 const editCategory = (category) => {
     hideSectionsEdit();
-    index = categories.findIndex((e) => e.id == category);
-    inputEditCategory.value = categories[index].nombre
-    return index;
+    const index = categories.findIndex((elem) => elem.id === category);
+    inputEditCategory.value = categories[index].nombre;
+    resultado = { i: index, valor: inputEditCategory.value };
+    return resultado
 };
 
 btnEditCategory.addEventListener("click", () => {
-    const newValue = inputEditCategory.value;
-    categories[index].nombre = newValue;
-    localStorage.setItem('categoriasStorage', JSON.stringify(categories))
-
+    categories[resultado.i].nombre = inputEditCategory.value;
+    localStorage.setItem("categoriasStorage", JSON.stringify(categories));
     categoriesHTML(categories);
     categoriesSelect(categories);
-    operationsHtml(operations)
-    hideEditSection()
+
+    operations.forEach(() => {
+        const posicion = operations.findIndex(
+            (operation) => operation.categoria === resultado.valor);
+        if (posicion >= 0) {
+            operations[posicion].categoria = inputEditCategory.value
+            localStorage.setItem("operacionesStorage", JSON.stringify(operations))
+        }
+        operationsHtml(operations);
+        balanceHTML(operations);
+    });
+
+    hideEditSection();
 });
 
 
 
 //eliminar categoria
 const deleteCategory = (category) => {
-    const categoryName = categories.find((elem) => elem.id == category);
+    const categoryName = categories.find((elem) => elem.id === category);
 
-    const value = categories.findIndex((elem) => elem.id == category);
+    const value = categories.findIndex((elem) => elem.id === category);
     if (value >= 0) {
         categories.splice(value, 1);
         localStorage.setItem('categoriasStorage', JSON.stringify(categories))
         categoriesHTML(categories);
         categoriesSelect(categories);
     }
+
+    operations.forEach(() => {
+        const index = operations.findIndex(
+            (operation) => operation.categoria === categoryName.nombre
+        );
+        if (index >= 0) {
+            operations.splice(index, 1);
+            localStorage.setItem("operacionesStorage", JSON.stringify(operations))
+        }
+        operationsHtml(operations);
+        balanceHTML(operations);
+    });
+
 };
+
+
 
 
 //PINTAR BALANCE
@@ -517,7 +557,7 @@ const ordenarAZ_ZA = (operacion, orden) => {
 const filtrarOperaciones = () => {
     const tipo = filtersType.value;
     const categoria = filtersCategories.value;
-    const fecha = fechaFiltros.value.replace(/-/g, "/");
+    const fecha = fechaFiltros.value;
     const orden = filtersOrder.value;
 
     let operaciones = operations;
@@ -564,6 +604,93 @@ filtersCategories.addEventListener("change", filtrarOperaciones);
 fechaFiltros.addEventListener('change', filtrarOperaciones);
 filtersOrder.addEventListener('change', filtrarOperaciones);
 
+
+
+
+//REPORTES
+const conReportes = document.getElementById('with-reports');
+const sinReportes = document.getElementById('without-reports');
+const resumenCategGanancia = document.getElementById('resumen-categ-mayor-ganancia');
+const resumenCategGasto = document.getElementById('resumen-categ-mayor-gasto');
+const resumenCategBalance= document.getElementById('resumen-categ-mayor-balance');
+const resumenMesGanancia = document.getElementById('resumen-mes-mayor-ganancia');
+const resumenMesGasto = document.getElementById('resumen-mes-mayor-ganancia');
+const reporteTotalCateg = document.getElementById('report-categories-total');
+const reporteTotalMes = document.getElementById('report-mes-total');
+
+let resultGastosGananciasCateg = {};
+
+const gastosGananciasCateg = (operaciones) =>{
+  if(filtrarTipo('Ganancia', operaciones).length &&
+  filtrarTipo('Gasto', operaciones).length ){
+    sinReportes.classList.add('is-hidden')
+    conReportes.classList.remove('is-hidden')
+  }
+
+  const parcial = [];
+
+  for (let i = 0; i < categories.length; i++) {
+    const categoriaGanancia = operaciones.filter(operacion => operacion.categoria === categories[i].nombre && operacion.tipo === 'Ganancia').reduce((inicial, current) => Number(inicial) + Number(current.monto) ,0)
+
+    const categoriaGasto = operaciones.filter(operacion => operacion.categoria === categories[i].nombre && operacion.tipo === 'Gasto').reduce((inicial, current) => Number(inicial) + Number(current.monto) ,0)
+
+    const categoriaBalance = categoriaGanancia + categoriaGasto
+    parcial.push({nombre: categories[i].nombre, ganancia: categoriaGanancia, gasto: categoriaGasto, balance: categoriaBalance})
+  }
+
+  resultGastosGananciasCateg = parcial.filter(elemen => elemen.ganancia > 0 || elemen.gasto < 0 )
+  console.log(resultGastosGananciasCateg);
+
+  const max = Math.max(...resultGastosGananciasCateg.map(valor => valor.ganancia))
+  const mayorGanancia = resultGastosGananciasCateg.find(elemen => elemen.ganancia === max)
+  resumenHTML(mayorGanancia, resumenCategGanancia, 'ganancia', 'has-text-success')
+
+  const min = Math.min(...resultGastosGananciasCateg.map(valor => valor.gasto))
+  const mayorGasto = resultGastosGananciasCateg.find(elemen => elemen.gasto === min)
+  resumenHTML(mayorGasto, resumenCategGasto, 'gasto', 'has-text-danger')
+
+  
+  const maxBalance = Math.max(...resultGastosGananciasCateg.map(valor => valor.balance))
+  const mayorBalance = resultGastosGananciasCateg.find(elemen => elemen.balance === maxBalance)
+  resumenHTML(mayorBalance, resumenCategBalance, 'balance')
+
+  
+
+  totalesPorCategHTML(resultGastosGananciasCateg)
+  return resultGastosGananciasCateg
+ 
+};
+
+
+const totalesPorCategHTML = (array) =>{
+  reporteTotalCateg.innerHTML = " ";
+  for (let i = 0; i < array.length; i++) {
+    const box = `
+    <div class="columns has-text-weight-medium m-0">
+            <div class="column has-text-centered is-3">${array[i].nombre}</div>
+            <div class="column has-text-centered has-text-success is-3">$${array[i].ganancia}</div>
+            <div class="column has-text-centered has-text-danger is-3">$${array[i].gasto}</div>
+            <div class="column has-text-centered is-3">$${array[i].balance}</div>
+          </div>
+    `
+    reporteTotalCateg.insertAdjacentHTML("beforeend", box);
+    
+  }
+}
+const resumenHTML = (objeto, caja, tipo, color) => {
+  console.log(objeto);
+  caja.innerHTML = ' ';
+ 
+  const box = `
+  <div class="columns has-text-weight-medium m-0 is-6">
+    <div class="column pr-6">${objeto.nombre}</div>
+    <div class="column pl-6 ${color}">$${objeto[tipo]}</div>
+  </div>
+  `
+  caja.insertAdjacentHTML("beforeend", box);
+}
+
+console.log(gastosGananciasCateg(operations))
 filtrarOperaciones();
 
 
