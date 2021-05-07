@@ -683,7 +683,7 @@ const totalesPorCategHTML = (array) =>{
   reporteTotalCateg.innerHTML = " ";
   for (let i = 0; i < array.length; i++) {
     const box = `
-    <div class="columns has-text-weight-medium m-0">
+    <div class="columns has-text-weight-medium m-0 is-mobile">
             <div class="column has-text-centered is-3">${array[i].nombre}</div>
             <div class="column has-text-centered has-text-success is-3">$${array[i].ganancia}</div>
             <div class="column has-text-centered has-text-danger is-3">$${array[i].gasto}</div>
@@ -696,13 +696,12 @@ const totalesPorCategHTML = (array) =>{
 }
 
 const resumenHTML = (objeto, caja, tipo, color) => {
-  console.log(objeto);
   caja.innerHTML = ' ';
  
   const box = `
-  <div class="columns has-text-weight-medium m-0 is-6" >
+  <div class="columns" >
   <div class="column"><span class="has-background-info-dark is-size-7 has-text-white radius p-1">${objeto.nombre}</span></div>
-    <div class="column pl-6 ${color}">$${objeto[tipo]}</div>
+    <div class="column ${color}">$${objeto[tipo]}</div>
   </div>
   `
   caja.insertAdjacentHTML("beforeend", box);
@@ -749,9 +748,9 @@ const obtenerResumenMeses = (operaciones) => {
     caja.innerHTML = " ";
   
     const box = `
-    <div class="columns has-text-weight-medium m-0">
-      <div class="column has-text-right is-10">${objeto[tipo].fecha}</div>
-      <div class="column has-text-right ${color}">$${objeto[tipo].monto}</div>
+    <div class="columns has-text-weight-medium m-0 is-mobile">
+      <div class="column has-text-right is-9 m-0">${objeto[tipo].fecha}</div>
+      <div class="column has-text-right m-0 ${color}">$${objeto[tipo].monto}</div>
     </div>
     `;
     caja.insertAdjacentHTML("beforeend", box);
@@ -762,7 +761,7 @@ const obtenerResumenMeses = (operaciones) => {
   
     for (const key in objeto) {
       const box = `
-      <div class="columns has-text-weight-medium m-0">
+      <div class="columns has-text-weight-medium m-0 is-mobile">
               <div class="column has-text-centered is-3">${key}</div>
               <div class="column has-text-centered has-text-success is-3">$${objeto[key].ganancia}</div>
               <div class="column has-text-centered has-text-danger is-3">$${objeto[key].gasto}</div>

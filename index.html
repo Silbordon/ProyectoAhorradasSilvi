@@ -351,32 +351,30 @@
                     <div class="column has-text-weight-medium m-0 mt-6 ">
                         <!-- RESUMEN -->
                         <p class="subtitle has-text-weight-medium">Resumen</p>
-                        <div class="columns is-mobile m-0 pl-5 pr-5 is-justify-content-space-between">
-                            <div class="column is-6">Categoría con mayor ganancia</div>
-                            <div id="resumen-categ-mayor-ganancia"></div>
-                            <!-- <div class="column has-text-right">Comida</div>
-        <div class="column has-text-right">200</div> -->
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-three-quarters">Categoría con mayor ganancia</div>
+                            <div class="column" id="resumen-categ-mayor-ganancia"></div>
                         </div>
-                        <div class="columns is-mobile m-0 pl-5 pr-5 is-justify-content-space-between">
-                            <div class="column is-6">Categoría con mayor gasto</div>
-                            <div id="resumen-categ-mayor-gasto"></div>
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-three-quarters">Categoría con mayor gasto</div>
+                            <div class="column" id="resumen-categ-mayor-gasto"></div>
                         </div>
-                        <div class="columns is-mobile m-0 pl-5 pr-5 is-justify-content-space-between">
-                            <div class="column is-6">Categoría con mayor balance</div>
-                            <div id="resumen-categ-mayor-balance"></div>
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-three-quarters">Categoría con mayor balance</div>
+                            <div class="column" id="resumen-categ-mayor-balance"></div>
                         </div>
-                        <div class="columns is-mobile m-0 pl-5 pr-5 is-justify-content-space-between">
-                            <div class="column is-6">Mes con mayor ganancia</div>
-                            <div id="resumen-mes-mayor-ganancia"></div>
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-half">Mes con mayor ganancia</div>
+                            <div class="column" id="resumen-mes-mayor-ganancia"></div>
                         </div>
-                        <div class="columns is-mobile m-0 pl-5 pr-5 is-justify-content-space-between">
-                            <div class="column is-6">Mes con mayor gasto</div>
-                            <div id="resumen-mes-mayor-gasto"></div>
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-half">Mes con mayor gasto</div>
+                            <div class="column" id="resumen-mes-mayor-gasto"></div>
                         </div>
                     </div>
                     <!-- TOTALES POR CATEGORIA -->
                     <p class="subtitle has-text-weight-medium mt-6">Totales por categorías</p>
-                    <div class="columns has-text-weight-medium m-0">
+                    <div class="columns has-text-weight-medium m-0 is-mobile">
                         <div class="column has-text-centered is-3">Categoría</div>
                         <div class="column has-text-centered is-3">Ganancias</div>
                         <div class="column has-text-centered is-3">Gastos</div>
@@ -386,7 +384,7 @@
 
                     <!-- TOTALES POR MES -->
                     <p class="subtitle has-text-weight-medium mt-6">Totales por mes</p>
-                    <div class="columns has-text-weight-medium m-0">
+                    <div class="columns has-text-weight-medium m-0 is-mobile">
                         <div class="column has-text-centered is-3">Mes</div>
                         <div class="column has-text-centered is-3">Ganancias</div>
                         <div class="column has-text-centered is-3">Gastos</div>
@@ -402,59 +400,6 @@
 
 
 
-        <!-- Section Reports
-        <section id="section-reports" class="is-hidden">
-            <div class="column is-6 is-offset-3 is-10-mobile is-offset-1-mobile px-4 py-4">
-                <div class="tile is-child box p-6">
-                    <div class="columns is-justify-content-space-between">
-                        <p class="title is-size-3 has-text-weight-bold ">Reportes</p>
-                    </div>
-                    <div class="column is-6 is-offset-3 p-5">
-                        <figure class="image">
-                            <img src="reporte.svg" alt="mujer con tarjeta de credito">
-                        </figure>
-                    </div>
-                    <div class="column is-align-items-center">
-                        <p class="title is-size-4 is-size-6-mobile has-text-centered py-2">Operaciones
-                            Insuficientes</p>
-                        <p class="subtitle is-size-6 is-size-7-mobile has-text-centered">Prueba agregando
-                            más
-                            operaciones</p>
-                    </div>
-                </div>
-                <div class="column has-text-weight-medium m-0 ">
-                    <p class="subtitle has-text-weight-medium">Resumen</p>
-                    <div class="column ">Categoría con mayor ganancia</div>
-                    <div class="column ">Categoría con mayor gasto</div>
-                    <div class="column ">Categoría con mayor balance</div>
-                    <div class="column ">Mes con mayor ganancia</div>
-                    <div class="column ">Mes con mayor gasto</div>
-                    <div id="resumen-report"></div>
-                </div>
-
-                <p class="subtitle has-text-weight-medium">Totales por Categoría</p>
-                <div class="columns has-text-weight-medium mt-3 m=0">
-                    <div class="column is-3 ">Categoría</div>
-                    <div class="column is-3">Ganancias</div>
-                    <div class="column is-3">Gastos</div>
-                    <div class="column is-3">Balance</div>
-                </div>
-                <div id="resumen-categories-total"></div>
-
-                <p class="subtitle has-text-weight-medium">Totales por Mes</p>
-                <div class="columns has-text-weight-medium mt-3 m=0">
-                    <div class="column is-3 ">Mes</div>
-                    <div class="column is-3">Ganancias</div>
-                    <div class="column is-3">Gastos</div>
-                    <div class="column is-3">Balance</div>
-                </div>
-                <div id="resumen-mont-total"></div>
-
-            </div>
-
-
-
-        </section> -->
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/node-uuid/1.4.7/uuid.min.js"></script>
